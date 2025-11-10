@@ -3,54 +3,72 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class BarRotate : MonoBehaviour
 {
-    public float moveSpeed = 5f;        // швидкість руху
-    public float rotationSpeed = 100f;  // швидкість обертання
+    public float moveSpeed = 5f;
+    public float rotationSpeed = 100f;
+
     private Rigidbody rb;
-
-    private bool isTouchingBench = false; 
-
+    private bool isTouchingBench = false;
     private Vector3 startPos;
     private Quaternion startRot;
+
+    // зчитувані значення
+    private float inputVertical = 0f;   
+    private float inputHorizontal = 0f; 
+    private float inputRotate = 0f;     
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
 
-        // Запам’ятовуємо стартову позицію й обертання
         startPos = rb.position;
         startRot = rb.rotation;
     }
 
     void Update()
     {
+        inputVertical = 0f;
+        if (Input.GetKey(KeyCode.W)) inputVertical += 1f;
+        if (Input.GetKey(KeyCode.S) && !isTouchingBench) inputVertical -= 1f;
+
+        inputHorizontal = 0f;
+        if (Input.GetKey(KeyCode.D)) inputHorizontal += 1f;
+        if (Input.GetKey(KeyCode.A)) inputHorizontal -= 1f;
+
+        inputRotate = 0f;
+        if (Input.GetKey(KeyCode.UpArrow)) inputRotate = 1f;
+        if (Input.GetKey(KeyCode.DownArrow)) inputRotate = -1f;
+    }
+
+    void FixedUpdate()
+    {
+        
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
+        
+        Vector3 forward = rb.rotation * Vector3.forward;
+        forward = Vector3.ProjectOnPlane(forward, Vector3.up).normalized; 
+
+        // Складаємо вектор руху
         Vector3 move = Vector3.zero;
+        move += Vector3.up * inputVertical;     
+        move += forward * inputHorizontal;       
 
-        // Вгору
-        if (Input.GetKey(KeyCode.W))
-            move += Vector3.up * moveSpeed * Time.deltaTime;
 
-        // Вниз (тільки якщо не торкаємось лавки)
-        if (Input.GetKey(KeyCode.S) && !isTouchingBench)
-            move += Vector3.down * moveSpeed * Time.deltaTime;
 
-        // Вперед/назад відносно грифа
-        if (Input.GetKey(KeyCode.D))
-            move += transform.forward * moveSpeed * Time.deltaTime;   
-        if (Input.GetKey(KeyCode.A))
-            move -= transform.forward * moveSpeed * Time.deltaTime;   
-
-        // Переміщення
+        // Застосовуємо рух через MovePosition
         if (move != Vector3.zero)
-            rb.MovePosition(rb.position + move);
+        {
+            Vector3 moveDelta = move * moveSpeed * Time.fixedDeltaTime;
+            rb.MovePosition(rb.position + moveDelta);
+        }
 
-        // Обертання навколо Y
-        if (Input.GetKey(KeyCode.UpArrow))
-            rb.MoveRotation(rb.rotation * Quaternion.Euler(Vector3.up * rotationSpeed * Time.deltaTime));
-        if (Input.GetKey(KeyCode.DownArrow))
-            rb.MoveRotation(rb.rotation * Quaternion.Euler(Vector3.up * -rotationSpeed * Time.deltaTime));
+        // Обертання навколо Y через MoveRotation
+        if (Mathf.Abs(inputRotate) > 0f)
+        {
+            Quaternion deltaRot = Quaternion.Euler(Vector3.up * inputRotate * rotationSpeed * Time.fixedDeltaTime);
+            rb.MoveRotation(rb.rotation * deltaRot);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -62,7 +80,6 @@ public class BarRotate : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Floor"))
         {
-            // Повертаємо штангу на старт
             rb.MovePosition(startPos);
             rb.MoveRotation(startRot);
             Debug.Log("Штанга впала на підлогу! Повертаємо у стартову позицію");
