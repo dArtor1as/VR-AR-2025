@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7006784707127905373}
   - component: {fileID: -2036892831218830942}
   - component: {fileID: -546233071295351087}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BenchPress
   m_TagString: Untagged
   m_Icon: {fileID: 0}

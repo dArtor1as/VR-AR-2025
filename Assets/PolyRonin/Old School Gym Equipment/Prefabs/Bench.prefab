@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4371334978224582786}
   - component: {fileID: -7542209813348211961}
   - component: {fileID: 3613764310145382074}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bench
   m_TagString: Untagged
   m_Icon: {fileID: 0}
