@@ -15,59 +15,50 @@ public class ObjectInfoDisplay : MonoBehaviour
 
     void Update()
     {
-        // ДІАГНОСТИКА: Якщо наведено, перевіряємо натискання
+        // Працює ТІЛЬКИ коли промінь наведений на об'єкт
         if (isHovered)
         {
             if (OVRInput.GetDown(infoButton))
             {
-                Debug.Log(">>> КНОПКУ НАТИСНУТО! Перемикаю панель.");
                 ToggleInfoPanel();
             }
         }
     }
 
+    // Цей метод викликає Event Wrapper
     public void SetHovered(bool hovered)
     {
         isHovered = hovered;
         
-        // ДІАГНОСТИКА: Пишемо в консоль, коли промінь заходить/виходить
-        if (hovered) Debug.Log($"XXX НАВЕДЕНО на {gameObject.name}!");
-        else Debug.Log($"... пішов з {gameObject.name}.");
 
-        if (!isHovered && currentInfoPanel != null)
-        {
-            Destroy(currentInfoPanel);
-            currentInfoPanel = null;
-        }
     }
 
     private void ToggleInfoPanel()
     {
+        // Якщо панелі немає - створюємо
         if (currentInfoPanel == null)
         {
             if (infoPanelPrefab != null && spawnPoint != null)
             {
                 currentInfoPanel = Instantiate(infoPanelPrefab, spawnPoint.position, spawnPoint.rotation);
-                currentInfoPanel.SetActive(true);
-                Transform cameraTransform = Camera.main.transform; 
-            
-            Vector3 directionToCamera = currentInfoPanel.transform.position - cameraTransform.position;
-            
-            directionToCamera.y = 0; 
+                
+                currentInfoPanel.SetActive(true); 
 
-            currentInfoPanel.transform.rotation = Quaternion.LookRotation(directionToCamera);
-                Debug.Log("Панель створено.");
-            }
-            else
-            {
-                Debug.LogError("ПОМИЛКА: Не вказано infoPanelPrefab або spawnPoint!");
+                // Розвертаємо до гравця
+                if (Camera.main != null)
+                {
+                    currentInfoPanel.transform.LookAt(Camera.main.transform);
+                    currentInfoPanel.transform.Rotate(0, 180, 0);
+                }
+                Debug.Log("Панель відкрито.");
             }
         }
+        // Якщо панель вже є - закриваємо
         else
         {
             Destroy(currentInfoPanel);
             currentInfoPanel = null;
-            Debug.Log("Панель прибрано.");
+            Debug.Log("Панель закрито.");
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine.UI; // Потрібно для Button
 using System.Collections.Generic; // Потрібно для List<>
 using System.Text; // Потрібно для StringBuilder
 
-// --- Оновлений клас даних (додано прізвище) ---
 [System.Serializable]
 public class UserData
 {
@@ -20,7 +19,6 @@ public class UserList
     public List<UserData> users = new List<UserData>();
 }
 
-// --- Оновлений Основний скрипт ---
 
 public class WizardManager : MonoBehaviour
 {
@@ -34,14 +32,14 @@ public class WizardManager : MonoBehaviour
     public TextMeshProUGUI userListText;
 
     [Header("Data Fields (Page 1)")]
-    public TMP_Dropdown userNameDropdown; // ЗАМІНЕНО
-    public TMP_Dropdown userSurnameDropdown; // НОВЕ
-    public Button buttonNextPage1; // НОВЕ: Кнопка "Далі" для валідації
+    public TMP_Dropdown userNameDropdown; 
+    public TMP_Dropdown userSurnameDropdown; 
+    public Button buttonNextPage1; 
 
     [Header("Data Fields (Page 2)")]
-    public TMP_Dropdown userAgeDropdown; // ЗАМІНЕНО
-    public TMP_Dropdown userGenderDropdown; // Перейменовано (було userGenderInput)
-    public Button buttonNextPage2; // НОВЕ: Кнопка "Далі" для валідації
+    public TMP_Dropdown userAgeDropdown; 
+    public TMP_Dropdown userGenderDropdown; 
+    public Button buttonNextPage2; 
 
     [Header("Confirmation Text (Page 3)")]
     public TextMeshProUGUI summaryText;
@@ -54,7 +52,6 @@ public class WizardManager : MonoBehaviour
         LoadData();
         GoToPage(page0_Welcome);
         
-        // --- НОВЕ: Вмикаємо "слухачів" для валідації ---
         // Ми "слухаємо" подію onValueChanged, щоб перевіряти, чи можна увімкнути кнопку
         if (userNameDropdown != null) userNameDropdown.onValueChanged.AddListener(delegate { CheckPage1Validity(); });
         if (userSurnameDropdown != null) userSurnameDropdown.onValueChanged.AddListener(delegate { CheckPage1Validity(); });
@@ -66,7 +63,6 @@ public class WizardManager : MonoBehaviour
         CheckPage2Validity();
     }
 
-    // --- НОВІ ФУНКЦІЇ ВАЛІДАЦІЇ ---
     public void CheckPage1Validity()
     {
         // Кнопка "Далі" активна, тільки якщо в обох Dropdown вибрано щось,
@@ -102,7 +98,6 @@ public class WizardManager : MonoBehaviour
         }
     }
 
-    // ОНОВЛЕНО: Тепер збирає дані з Dropdown
     public void ShowSummary()
     {
         if (summaryText != null)
@@ -122,7 +117,6 @@ public class WizardManager : MonoBehaviour
 
     // --- 2. ЗБЕРЕЖЕННЯ/ЗАВАНТАЖЕННЯ (Завдання 3) ---
 
-    // ОНОВЛЕНО: Тепер збирає дані з Dropdown
     public void RegisterAndFinish()
     {
         UserData newUser = new UserData
